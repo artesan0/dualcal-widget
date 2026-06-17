@@ -15,6 +15,19 @@ android {
         versionName = "1.0"
     }
 
+    // Keystore de firma fija (versionada). La contraseña "android" es la
+    // estándar de depuración y no es secreta: solo sirve para que todas las
+    // compilaciones (Mac o GitHub Actions) firmen igual y el móvil reconozca
+    // las actualizaciones como la misma app.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
