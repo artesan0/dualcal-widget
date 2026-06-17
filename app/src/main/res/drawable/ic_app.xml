@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icono de la app: dos columnas (azul = Asunción, naranja = Madrid) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#0F1115" android:pathData="M0,0h108v108h-108z" />
+    <path android:fillColor="#E8EAF0" android:pathData="M22,24h64v11h-64z" />
+    <path android:fillColor="#4F8CFF" android:pathData="M24,44h28v44h-28z" />
+    <path android:fillColor="#FF9F43" android:pathData="M58,44h28v44h-28z" />
+</vector>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DualCal Widget</string>
+    <string name="widget_desc">Agenda con doble huso: Asunción y Madrid (ES)</string>
+    <string name="intro">Este widget muestra tus próximos eventos con la hora de Asunción y de Madrid a la vez, leyendo el calendario ya sincronizado en tu teléfono.</string>
+    <string name="estado_ok">Permiso concedido. Mantén pulsada la pantalla de inicio → Widgets → DualCal y arrástralo.</string>
+    <string name="estado_falta_permiso">DualCal necesita permiso para leer tu calendario y mostrar los eventos en el widget.</string>
+    <string name="boton_permiso">Conceder permiso de calendario</string>
+    <string name="boton_abrir">Abrir DualCal</string>
+    <string name="sin_eventos">No hay eventos próximos</string>
+    <string name="refrescar">Refrescar</string>
+</resources>
