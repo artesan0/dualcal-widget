@@ -7,12 +7,14 @@
     android:paddingVertical="7dp"
     android:gravity="center_vertical">
 
-    <!-- Barra con el color real del calendario (se tiñe por código) -->
-    <View
+    <!-- Barra con el color real del calendario (se tiñe por código).
+         ImageView, no View: los widgets no admiten la clase View genérica. -->
+    <ImageView
         android:id="@+id/barra"
         android:layout_width="3dp"
         android:layout_height="34dp"
         android:layout_marginEnd="9dp"
+        android:contentDescription="@null"
         android:background="@color/azul" />
 
     <LinearLayout
