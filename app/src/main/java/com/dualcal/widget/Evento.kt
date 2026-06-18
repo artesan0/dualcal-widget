@@ -1,8 +1,10 @@
 package com.dualcal.widget
 
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 /** Un evento ya listo para pintar en el widget. */
 data class Evento(
@@ -27,6 +29,7 @@ object Huso {
     const val ETIQUETA_SECUNDARIA = "ES"
 
     private val HM = DateTimeFormatter.ofPattern("HH:mm")
+    private val ES = Locale("es", "ES")
 
     fun horaPrimaria(ms: Long): String =
         Instant.ofEpochMilli(ms).atZone(PRIMARIA).format(HM)
@@ -44,8 +47,15 @@ object Huso {
         return "${sec.format(HM)}$marca $ETIQUETA_SECUNDARIA"
     }
 
-    /** Etiqueta del día para las cabeceras (p. ej. "mar 17 jun"). */
-    fun diaCorto(ms: Long): String =
-        Instant.ofEpochMilli(ms).atZone(PRIMARIA)
-            .format(DateTimeFormatter.ofPattern("EEE d MMM", java.util.Locale("es", "ES")))
+    /** Texto de la cabecera de día: "Hoy · …", "Mañana · …" o la fecha. */
+    fun etiquetaDia(dia: LocalDate): String {
+        val hoy = LocalDate.now(PRIMARIA)
+        val fecha = dia.format(DateTimeFormatter.ofPattern("EEEE d MMM", ES))
+            .replaceFirstChar { it.uppercase() }
+        return when (dia) {
+            hoy -> "Hoy · $fecha"
+            hoy.plusDays(1) -> "Mañana · $fecha"
+            else -> fecha
+        }
+    }
 }

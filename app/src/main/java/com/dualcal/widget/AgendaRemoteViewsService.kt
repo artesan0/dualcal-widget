@@ -5,6 +5,9 @@ import android.content.Intent
 import android.view.View
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 /** Servicio que conecta la lista del widget con los datos del calendario. */
 class AgendaRemoteViewsService : RemoteViewsService() {
@@ -12,35 +15,68 @@ class AgendaRemoteViewsService : RemoteViewsService() {
         AgendaFactory(applicationContext)
 }
 
-/** "Adaptador" del widget: produce una fila (RemoteViews) por evento. */
+/**
+ * "Adaptador" del widget. Produce dos tipos de fila: cabecera de día
+ * (separador) y evento. Así la lista no mezcla días sin avisar.
+ */
 class AgendaFactory(private val ctx: Context) : RemoteViewsService.RemoteViewsFactory {
 
-    private var eventos: List<Evento> = emptyList()
+    private sealed class Fila
+    private class Cabecera(val texto: String) : Fila()
+    private class Item(val evento: Evento) : Fila()
+
+    private var filas: List<Fila> = emptyList()
 
     override fun onCreate() {}
-    override fun onDestroy() { eventos = emptyList() }
+    override fun onDestroy() { filas = emptyList() }
 
-    // Se llama en un hilo aparte: aquí sí podemos consultar el proveedor
     override fun onDataSetChanged() {
-        eventos = CalendarRepositorio.proximosEventos(ctx)
+        // Ordenar por día de calendario, luego "todo el día" primero, luego hora.
+        // Hace falta porque los eventos de todo el día se guardan en UTC y su
+        // instante puede caer en otro día respecto a los eventos con hora.
+        val eventos = CalendarRepositorio.proximosEventos(ctx)
+            .sortedWith(
+                compareBy(
+                    { diaCalendario(it).toEpochDay() },
+                    { if (it.todoElDia) 0 else 1 },
+                    { it.inicioMs }
+                )
+            )
+        val nuevas = ArrayList<Fila>()
+        var dia: LocalDate? = null
+        for (ev in eventos) {
+            val d = diaCalendario(ev)
+            if (d != dia) {
+                nuevas.add(Cabecera(Huso.etiquetaDia(d)))
+                dia = d
+            }
+            nuevas.add(Item(ev))
+        }
+        filas = nuevas
     }
 
-    override fun getCount(): Int = eventos.size
-    override fun getViewTypeCount(): Int = 1
-    override fun getItemId(position: Int): Long = eventos[position].id
-    override fun hasStableIds(): Boolean = true
+    override fun getCount(): Int = filas.size
+    override fun getViewTypeCount(): Int = 2   // cabecera + evento
+    override fun getItemId(position: Int): Long = position.toLong()
+    override fun hasStableIds(): Boolean = false
     override fun getLoadingView(): RemoteViews? = null
 
-    override fun getViewAt(position: Int): RemoteViews {
-        val ev = eventos[position]
-        val rv = RemoteViews(ctx.packageName, R.layout.widget_item)
+    override fun getViewAt(position: Int): RemoteViews =
+        when (val fila = filas[position]) {
+            is Cabecera -> RemoteViews(ctx.packageName, R.layout.widget_dia).apply {
+                setTextViewText(R.id.dia_texto, fila.texto)
+            }
+            is Item -> construirItem(fila.evento)
+        }
 
-        // Píldora con TODO el fondo del color del evento (colores de Google)
+    /** Una píldora con TODO el fondo del color del evento (colores de Google). */
+    private fun construirItem(ev: Evento): RemoteViews {
+        val rv = RemoteViews(ctx.packageName, R.layout.widget_item)
         rv.setInt(R.id.fondo, "setColorFilter", ev.color)
 
-        // Texto que contraste con ese fondo: oscuro si es claro, blanco si es oscuro
+        // Texto que contraste: oscuro si el fondo es claro, blanco si es oscuro
         val texto = colorTexto(ev.color)
-        val tenue = conAlpha(texto, 0xCC) // ubicación y hora ES, algo atenuadas
+        val tenue = conAlpha(texto, 0xCC)
         rv.setTextColor(R.id.titulo, texto)
         rv.setTextColor(R.id.ubicacion, tenue)
         rv.setTextColor(R.id.hora_pri, texto)
@@ -64,10 +100,16 @@ class AgendaFactory(private val ctx: Context) : RemoteViewsService.RemoteViewsFa
             rv.setTextViewText(R.id.hora_sec, Huso.horaSecundaria(ev.inicioMs))
         }
 
-        // Propaga el clic al PendingIntent plantilla (abre DualCal)
         rv.setOnClickFillInIntent(R.id.item_root, Intent())
         return rv
     }
+
+    /** Día de calendario del evento. Los de todo el día se guardan en UTC. */
+    private fun diaCalendario(ev: Evento): LocalDate =
+        if (ev.todoElDia)
+            Instant.ofEpochMilli(ev.inicioMs).atZone(ZoneOffset.UTC).toLocalDate()
+        else
+            Instant.ofEpochMilli(ev.inicioMs).atZone(Huso.PRIMARIA).toLocalDate()
 
     /** Negro sobre fondos claros, blanco sobre oscuros (luminancia percibida). */
     private fun colorTexto(fondo: Int): Int {

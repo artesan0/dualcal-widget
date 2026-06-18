@@ -8,9 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.RemoteViews
-import java.time.Instant
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 /** Proveedor del widget de agenda en doble huso. */
 class AgendaWidgetProvider : AppWidgetProvider() {
@@ -27,10 +24,8 @@ class AgendaWidgetProvider : AppWidgetProvider() {
     private fun actualizarWidget(ctx: Context, mgr: AppWidgetManager, id: Int) {
         val rv = RemoteViews(ctx.packageName, R.layout.widget_agenda)
 
-        // Cabecera: fecha de hoy en la zona primaria (Asunción)
-        val hoy = Instant.now().atZone(Huso.PRIMARIA)
-            .format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es", "ES")))
-        rv.setTextViewText(R.id.cabecera_fecha, hoy.replaceFirstChar { it.uppercase() })
+        // La cabecera superior es fija ("DualCal"); el día de cada bloque lo
+        // marcan ahora los separadores dentro de la propia lista.
 
         // Lista de eventos alimentada por el servicio
         val servicio = Intent(ctx, AgendaRemoteViewsService::class.java)
