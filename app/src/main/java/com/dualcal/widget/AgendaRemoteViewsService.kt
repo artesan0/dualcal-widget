@@ -35,10 +35,18 @@ class AgendaFactory(private val ctx: Context) : RemoteViewsService.RemoteViewsFa
         val ev = eventos[position]
         val rv = RemoteViews(ctx.packageName, R.layout.widget_item)
 
-        // Barra lateral con el color real del calendario
-        rv.setInt(R.id.barra, "setBackgroundColor", ev.color)
-        rv.setTextViewText(R.id.titulo, ev.titulo)
+        // Píldora con TODO el fondo del color del evento (colores de Google)
+        rv.setInt(R.id.fondo, "setColorFilter", ev.color)
 
+        // Texto que contraste con ese fondo: oscuro si es claro, blanco si es oscuro
+        val texto = colorTexto(ev.color)
+        val tenue = conAlpha(texto, 0xCC) // ubicación y hora ES, algo atenuadas
+        rv.setTextColor(R.id.titulo, texto)
+        rv.setTextColor(R.id.ubicacion, tenue)
+        rv.setTextColor(R.id.hora_pri, texto)
+        rv.setTextColor(R.id.hora_sec, tenue)
+
+        rv.setTextViewText(R.id.titulo, ev.titulo)
         if (ev.ubicacion != null) {
             rv.setTextViewText(R.id.ubicacion, ev.ubicacion)
             rv.setViewVisibility(R.id.ubicacion, View.VISIBLE)
@@ -48,9 +56,10 @@ class AgendaFactory(private val ctx: Context) : RemoteViewsService.RemoteViewsFa
 
         // Doble huso: Asunción arriba, Madrid (ES) debajo
         if (ev.todoElDia) {
-            rv.setTextViewText(R.id.hora_pri, "Todo")
-            rv.setTextViewText(R.id.hora_sec, "el día")
+            rv.setTextViewText(R.id.hora_pri, "Todo el día")
+            rv.setViewVisibility(R.id.hora_sec, View.GONE)
         } else {
+            rv.setViewVisibility(R.id.hora_sec, View.VISIBLE)
             rv.setTextViewText(R.id.hora_pri, Huso.horaPrimaria(ev.inicioMs))
             rv.setTextViewText(R.id.hora_sec, Huso.horaSecundaria(ev.inicioMs))
         }
@@ -59,4 +68,16 @@ class AgendaFactory(private val ctx: Context) : RemoteViewsService.RemoteViewsFa
         rv.setOnClickFillInIntent(R.id.item_root, Intent())
         return rv
     }
+
+    /** Negro sobre fondos claros, blanco sobre oscuros (luminancia percibida). */
+    private fun colorTexto(fondo: Int): Int {
+        val r = (fondo shr 16) and 0xFF
+        val g = (fondo shr 8) and 0xFF
+        val b = fondo and 0xFF
+        val luminancia = 0.299 * r + 0.587 * g + 0.114 * b
+        return if (luminancia > 150) 0xFF10131A.toInt() else 0xFFFFFFFF.toInt()
+    }
+
+    private fun conAlpha(color: Int, alpha: Int): Int =
+        (color and 0x00FFFFFF) or (alpha shl 24)
 }

@@ -1,68 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Cada evento es una "píldora" con TODO el fondo de su color (estilo
+     Google Calendar). El fondo es un ImageView que se tiñe por código;
+     el color del texto se ajusta para que contraste sobre cada color. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:paddingVertical="7dp"
-    android:gravity="center_vertical">
+    android:paddingVertical="4dp"
+    android:paddingHorizontal="1dp">
 
-    <!-- Barra con el color real del calendario (se tiñe por código).
-         ImageView, no View: los widgets no admiten la clase View genérica. -->
     <ImageView
-        android:id="@+id/barra"
-        android:layout_width="3dp"
-        android:layout_height="34dp"
-        android:layout_marginEnd="9dp"
-        android:contentDescription="@null"
-        android:background="@color/azul" />
+        android:id="@+id/fondo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/pildora"
+        android:contentDescription="@null" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="10dp">
 
-        <TextView
-            android:id="@+id/titulo"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/texto"
-            android:textSize="13sp"
-            android:maxLines="1"
-            android:ellipsize="end" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/ubicacion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/texto_suave"
-            android:textSize="11sp"
-            android:maxLines="1"
-            android:ellipsize="end" />
-    </LinearLayout>
+            <TextView
+                android:id="@+id/titulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
-    <!-- Doble huso: Asunción arriba, Madrid (ES) debajo -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="end"
-        android:paddingStart="8dp">
+            <TextView
+                android:id="@+id/ubicacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textSize="12sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/hora_pri"
+        <!-- Doble huso: Asunción arriba, Madrid (ES) debajo, ambas a 15sp -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/texto"
-            android:textSize="15sp" />
+            android:orientation="vertical"
+            android:gravity="end"
+            android:paddingStart="8dp">
 
-        <!-- Misma medida que la hora primaria: ambas a 15sp -->
-        <TextView
-            android:id="@+id/hora_sec"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/naranja"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/hora_pri"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/hora_sec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#FFFFFFFF"
+                android:textSize="15sp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>
