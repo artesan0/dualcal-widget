@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.widget.RemoteViews
 
 /** Proveedor del widget de agenda en doble huso. */
@@ -32,8 +31,9 @@ class AgendaWidgetProvider : AppWidgetProvider() {
         rv.setRemoteAdapter(R.id.lista, servicio)
         rv.setEmptyView(R.id.lista, R.id.vacio)
 
-        // Tap en un evento → abrir la PWA DualCal
-        val abrir = Intent(Intent.ACTION_VIEW, Uri.parse(URL_DUALCAL))
+        // Tap en un evento → abrir DualCal como app (pantalla completa) o, si
+        // no está instalada, en el navegador. Lo decide AbrirDualCalActivity.
+        val abrir = Intent(ctx, AbrirDualCalActivity::class.java)
         val piAbrir = PendingIntent.getActivity(
             ctx, 0, abrir,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

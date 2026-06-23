@@ -22,6 +22,14 @@
             </intent-filter>
         </activity>
 
+        <!-- Actividad puente que abre DualCal como app (o navegador si falta) -->
+        <activity
+            android:name=".AbrirDualCalActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Transparente" />
+
         <!-- Proveedor del widget de pantalla de inicio -->
         <receiver
             android:name=".AgendaWidgetProvider"

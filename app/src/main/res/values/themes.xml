@@ -4,4 +4,9 @@
         <item name="android:statusBarColor">@color/fondo</item>
         <item name="android:windowBackground">@color/fondo</item>
     </style>
+
+    <!-- Actividad puente invisible: no debe pintar nada -->
+    <style name="Theme.Transparente" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
 </resources>
