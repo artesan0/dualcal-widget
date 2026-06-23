@@ -12,15 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DualCalWidget">
 
-        <!-- Pantalla de ayuda: concede el permiso y explica cómo añadir el widget -->
+        <!-- Pantalla de ayuda/permiso. Sin icono en el cajón de apps (no lleva
+             LAUNCHER): se abre desde el propio widget si falta el permiso, para
+             no duplicar icono con la PWA "DualCal". -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false" />
 
         <!-- Actividad puente que abre DualCal como app (o navegador si falta) -->
         <activity

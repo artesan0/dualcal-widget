@@ -8,5 +8,6 @@
     <string name="boton_permiso">Conceder permiso de calendario</string>
     <string name="boton_abrir">Abrir DualCal</string>
     <string name="sin_eventos">No hay eventos próximos</string>
+    <string name="toca_permiso">Toca para conceder permiso de calendario</string>
     <string name="refrescar">Refrescar</string>
 </resources>

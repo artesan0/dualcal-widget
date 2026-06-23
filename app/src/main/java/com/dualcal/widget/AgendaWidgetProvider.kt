@@ -41,6 +41,21 @@ class AgendaWidgetProvider : AppWidgetProvider() {
         rv.setPendingIntentTemplate(R.id.lista, piAbrir)
         rv.setOnClickPendingIntent(R.id.cabecera, piAbrir)
 
+        // Vista de "vacío": si falta el permiso, llevar a concederlo (ya que la
+        // app no tiene icono en el cajón); si solo es que no hay eventos, abrir DualCal
+        if (CalendarRepositorio.hayPermiso(ctx)) {
+            rv.setTextViewText(R.id.vacio, ctx.getString(R.string.sin_eventos))
+            rv.setOnClickPendingIntent(R.id.vacio, piAbrir)
+        } else {
+            rv.setTextViewText(R.id.vacio, ctx.getString(R.string.toca_permiso))
+            val piPermiso = PendingIntent.getActivity(
+                ctx, 2,
+                Intent(ctx, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            rv.setOnClickPendingIntent(R.id.vacio, piPermiso)
+        }
+
         // Botón de refresco manual
         val refrescar = Intent(ctx, AgendaWidgetProvider::class.java).setAction(ACTION_REFRESH)
         val piRefrescar = PendingIntent.getBroadcast(
